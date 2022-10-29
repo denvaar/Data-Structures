@@ -5,9 +5,13 @@
 
 #include "trie.h"
 
+/*
+ * Creation
+ */
 node *new_node() {
   node *n = malloc(sizeof(node));
   n->term = false;
+  n->value = -1;
 
   for (int i = 0; i < N_CHILDREN; i++) {
     n->children[i] = NULL;
@@ -16,13 +20,33 @@ node *new_node() {
   return n;
 }
 
-bool in(node *trie, char *word) {
+/*
+ * Look up a value using a given key
+ */
+int lookup(node *trie, char *key) {
   node *tmp = trie;
 
-  int word_length = strlen(word);
+  for (int i = 0; i < strlen(key); i++) {
+    char letter = key[i];
 
-  for (int i = 0; i < word_length; i++) {
-    char letter = word[i];
+    if (tmp->children[(int)letter]) {
+      tmp = tmp->children[(int)letter];
+    } else {
+      return -1;
+    }
+  }
+
+  return tmp->value;
+}
+
+/*
+ * Check if key is a prefix.
+ */
+bool prefix(node *trie, char *key) {
+  node *tmp = trie;
+
+  for (int i = 0; i < strlen(key); i++) {
+    char letter = key[i];
 
     if (tmp->children[(int)letter]) {
       tmp = tmp->children[(int)letter];
@@ -31,16 +55,19 @@ bool in(node *trie, char *word) {
     }
   }
 
-  return tmp->term;
+  return true;
 }
 
-void insert_word(node *trie, char *word) {
+/*
+ * Insertion
+ */
+void insert(node *trie, char *key, int value) {
   node *tmp = trie;
 
-  int word_length = strlen(word);
+  int key_length = strlen(key);
 
-  for (int i = 0; i < word_length; i++) {
-    char letter = word[i];
+  for (int i = 0; i < key_length; i++) {
+    char letter = key[i];
 
     if (tmp->children[(int)letter] == NULL) {
       node *n = new_node();
@@ -51,11 +78,22 @@ void insert_word(node *trie, char *word) {
       tmp = tmp->children[(int)letter];
     }
 
-    if (i == word_length - 1) {
+    if (i == key_length - 1) {
       tmp->term = true;
+      tmp->value = value;
     }
   }
 
+}
+
+void delete_trie(node *trie) {
+  for (int i = 0; i < N_CHILDREN; i++) {
+    if (trie->children[i]) {
+      delete_trie(trie->children[i]);
+    }
+  }
+
+  free(trie);
 }
 
 static void indent(n) {
