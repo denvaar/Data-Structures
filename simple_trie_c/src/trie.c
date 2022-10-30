@@ -5,10 +5,7 @@
 
 #include "trie.h"
 
-/*
- * Creation
- */
-node *new_node() {
+static node *new_node() {
   node *n = malloc(sizeof(node));
   n->term = false;
   n->value = -1;
@@ -61,8 +58,10 @@ bool prefix(node *trie, char *key) {
 /*
  * Insertion
  */
-void insert(node *trie, char *key, int value) {
-  node *tmp = trie;
+void insert(node **trie, char *key, int value) {
+  if (*trie == NULL) *trie = new_node();
+
+  node *tmp = *trie;
 
   int key_length = strlen(key);
 
@@ -84,6 +83,66 @@ void insert(node *trie, char *key, int value) {
     }
   }
 
+}
+
+static bool any_edges(node *n) {
+  for (int i = 0; i < N_CHILDREN; i++) {
+    if (n->children[i] != NULL) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static int remove_node(node **n, int key_length) {
+  int value = -1;
+
+  if ((*n)->term && key_length == 0) {
+    (*n)->term = false;
+    value = (*n)->value;
+  }
+
+  if (!any_edges(*n)) {
+    free(*n);
+    *n = NULL;
+  }
+
+  return value;
+}
+
+static char strhead(char *s) {
+  if (s != NULL) return s[0];
+
+  return '\0';
+}
+
+static char *strtail(char *s) {
+  if (s == NULL || strcmp(s, "") == 0) return "";
+
+  char *tail = &s[1];
+
+  return tail;
+}
+
+int remove_key(node **n, char *key) {
+  int value = -1;
+  int key_length = strlen(key);
+
+  if (key_length == 0) {
+    value = (*n)->value;
+    remove_node(n, key_length);
+    return value;
+  }
+
+  char k = strhead(key);
+
+  if ((*n)->children[(int)k]) {
+    value = remove_key(&(*n)->children[(int)k], strtail(key));
+    remove_node(n, key_length);
+  }
+
+  return value;
 }
 
 void delete_trie(node *trie) {
@@ -124,6 +183,8 @@ static void print_walk(node *n, int depth, char letter) {
 }
 
 void print_trie(node *trie) {
+  if (trie == NULL) return;
+
   print_walk(trie, 1, '*');
   printf("\n");
 }
