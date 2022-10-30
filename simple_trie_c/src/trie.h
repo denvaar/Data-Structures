@@ -11,15 +11,15 @@ typedef struct node {
   struct node *children[N_CHILDREN];
 } node;
 
-node* new_node(void);
-
 void delete_trie(node *trie);
 
 int lookup(node *trie, char *key);
 
 bool prefix(node *trie, char *key);
 
-void insert(node *trie, char *key, int value);
+void insert(node **trie, char *key, int value);
+
+int remove_key(node **trie, char *key);
 
 void print_trie(node *trie);
 

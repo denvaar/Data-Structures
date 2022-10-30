@@ -3,10 +3,17 @@
 #include "trie.h"
 
 int main(void) {
-  node *root = new_node();
+  node *root = NULL;
 
-  insert(root, "day", 50);
-  insert(root, "dogs", 10);
+  print_trie(root);
+
+  printf("insert(&root, \"day\", 50)\n");
+  insert(&root, "day", 50);
+
+  print_trie(root);
+
+  printf("insert(&root, \"dogs\", 10)\n");
+  insert(&root, "dogs", 10);
 
   print_trie(root);
 
@@ -14,8 +21,11 @@ int main(void) {
   printf("lookup(root, \"dogs\") -> %d\n", lookup(root, "dogs"));
   printf("lookup(root, \"dog\") -> %d\n", lookup(root, "dog"));
 
-  insert(root, "donut", 3);
-  insert(root, "doggy", 22);
+  printf("insert(&root, \"donut\", 3)\n");
+  insert(&root, "donut", 3);
+
+  printf("insert(&root, \"doggy\", 22)\n");
+  insert(&root, "doggy", 22);
 
   print_trie(root);
 
@@ -27,6 +37,26 @@ int main(void) {
   printf("prefix(root, \"dogg\") -> %d\n", prefix(root, "dogg"));
   printf("prefix(root, \"doggy\") -> %d\n", prefix(root, "doggy"));
   printf("prefix(root, \"doggyy\") -> %d\n", prefix(root, "doggyy"));
+
+  print_trie(root);
+
+  printf("remove_key(root, \"day\") -> %d\n", remove_key(&root, "day"));
+  print_trie(root);
+
+  printf("remove_key(&root, \"dogs\") -> %d\n", remove_key(&root, "dogs"));
+  print_trie(root);
+
+  printf("remove_key(&root, \"non key\") -> %d\n", remove_key(&root, "non key"));
+  print_trie(root);
+
+  printf("remove_key(&root, \"donu\") -> %d\n", remove_key(&root, "donu"));
+  print_trie(root);
+
+  printf("remove_key(&root, \"donuts\") -> %d\n", remove_key(&root, "donuts"));
+  print_trie(root);
+
+  printf("remove_key(&root, \"donut\") -> %d\n", remove_key(&root, "donut"));
+  print_trie(root);
 
   delete_trie(root);
 }
